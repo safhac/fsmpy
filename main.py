@@ -1,86 +1,63 @@
 import asyncio
 from datetime import datetime
 from typing import *
-
-"""
-MODEL : state
-Update: a function that updates the model
-it's arguments are the old model, a command with arguments
-Cmd: the event that occured 
-Msg: are the arguments for command
+from enum import Enum, auto
 
 
-"""
+class ModelEnum(Enum):
+    def __new__(cls, fn, *args, **kwargs):
+        obj = object.__new__(cls)
+        obj.__call__ = fn(*args, **kwargs)
+        return obj
 
-class Update:
-    pass
 
-class Main:
-    pass
+def listen(): ...
 
-class Model:
-    pass
 
-class View:
-    pass
+def process(): ...
+
+
+def send(): ...
+
+
+def failure(): ...
+
+
+class Model(ModelEnum):
+    Listen = (listen)
+    Process = (process)
+    Send = (send)
+    Failure = (failure)
+
+
+class Msg(Enum):
+    Received = auto()
+    Wait = auto()
+
+
+init = lambda: (Model.Listen, Msg.Wait)
+
+
+async def update(model: Model, msg: Msg):
+    match msg:
+        case Msg.Received:
+            ...
+        case Msg.Wait:
+            ...
+        case _:
+            ...
 
 
 class Program:
-    def __init__(self, main, *args, **kwargs):
-        self.__main__ = main
-        loop = asyncio.
+
+    def __init__(self, init, update, subscriptions):
+        self.init = init,
+        self.update = update
+        self.subscriptions = subscriptions
+
     async def __call__(self, *args, **kwargs):
-        await self.__main__()
+        await self.update(init, Msg.Wait)
 
-
-received = TypeVar("received")
-process = TypeVar("process")
-send = TypeVar("send")
-
-Command = received | process | send
-
-
-class Command:
-    pass
-
-
-def immutable(args):
-    pass
-
-
-@immutable
-
-
-Model = lambda: {
-    'file': None
-}
-
-
-class File:
-    input_date: datetime
-    process_time: int
-
-
-class Cmd:
-
-
-def update(model: Model, cmd: Cmd):
-    match cmd:
-        case received:
-            ...
-        case process:
-            ...
-        case send:
-            ...
-        case sent:
-            ...
-
-
-async def socket_listener():
-
-async def main():
-    pass
 
 if __name__ == '__main__':
-    loop = asyncio.get_running_loop()
-    loop.run_until_complete(main())
+    lambda: Program(init, update)()
