@@ -3,61 +3,72 @@ from datetime import datetime
 from typing import *
 from enum import Enum, auto
 
-
-class ModelEnum(Enum):
-    def __new__(cls, fn, *args, **kwargs):
-        obj = object.__new__(cls)
-        obj.__call__ = fn(*args, **kwargs)
-        return obj
+async def listen(): ...
 
 
-def listen(): ...
+async def process(): ...
 
 
-def process(): ...
-
-
-def send(): ...
+async def send(): ...
 
 
 def failure(): ...
 
 
-class Model(ModelEnum):
-    Listen = (listen)
-    Process = (process)
-    Send = (send)
-    Failure = (failure)
-
-
 class Msg(Enum):
-    Received = auto()
-    Wait = auto()
+    Listen = auto()
+    Process = auto()
+    Send = auto()
+    Failure = auto()
 
 
-init = lambda: (Model.Listen, Msg.Wait)
+class Model:
+    def __init__(self):
+        self.file: str = ''
+        self.available: bool = True
+
+    def __set__(self, instance, value):
+        if self.available:
+            self.file = value
+            self.available = False
 
 
-async def update(model: Model, msg: Msg):
+init = lambda: (Model, Msg.Listen)
+
+
+async def update(model: Model, msg: Msg) -> (Model, Msg):
     match msg:
-        case Msg.Received:
-            ...
-        case Msg.Wait:
-            ...
+        case Msg.Listen:
+            print(f'listen {model} {msg}')
+        case Msg.Proccesed:
+            print(f'received {model} {msg}')
+            return (Model.Process(), Msg.Processed)
+        case Msg.Nothing:
+            print(f'Nothing {model} {msg}')
+            return (Model.Listen, Msg.Nothing)
         case _:
-            ...
+            return (Model.Listen, Msg.Nothing)
+
+
+async def subscriptions(): ...
 
 
 class Program:
 
-    def __init__(self, init, update, subscriptions):
-        self.init = init,
+    def __init__(self, initial_data, update, subscriptions):
+        self.init = initial_data()
         self.update = update
         self.subscriptions = subscriptions
 
     async def __call__(self, *args, **kwargs):
-        await self.update(init, Msg.Wait)
+        model, msg = self.init
+        await self.update(model, msg)
 
 
 if __name__ == '__main__':
-    lambda: Program(init, update)()
+    start = datetime.now()
+    with Program(init, update, subscriptions) as program:
+        asyncio.run(program())
+    done = datetime.now()
+    print(f'ran {start} {done} ({start - done}')
+
