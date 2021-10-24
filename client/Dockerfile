@@ -5,9 +5,9 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY setup.py .
 ADD . /deploy
-RUN cd /deploy
-RUN pip install --upgrade pip
-RUN pip install .
+RUN cd /deploy && \
+    pip install --upgrade pip && \
+    pip install .
 
 FROM python:3.10 AS build-image
 COPY --from=compile-image /opt/venv /opt/venv
