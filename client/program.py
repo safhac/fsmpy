@@ -7,7 +7,8 @@ class Program:
     """
     The class represents the program primary parts
     Initial state, Update method, Subscription method
-    The program is initiated with init initial state, the update function and the subscriptions
+    The program is initiated with init initial state,
+    the update function and the subscriptions
     event listener function.
     """
 
@@ -16,7 +17,7 @@ class Program:
         self.update = update(model, msg)
         self.subscriptions = subscriptions
 
-    def start(self):
+    async def start(self):
         update = self.update.update()
-        with update:
+        async with update:
             update.send(Msg.Listen)
