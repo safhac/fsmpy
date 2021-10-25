@@ -8,4 +8,12 @@
 - failure
 
 ***
-## issues:
+#### issues:
+- [TypeError: an integer is required](https://youtrack.jetbrains.com/issue/PY-50572)
+```
+Traceback (most recent call last):
+  File "_pydevd_bundle/pydevd_cython.pyx", line 1589, in _pydevd_bundle.pydevd_cython.ThreadTracer.__call__
+  File "_pydevd_bundle/pydevd_cython.pyx", line 656, in _pydevd_bundle.pydevd_cython.PyDBFrame.trace_dispatch
+TypeError: an integer is required
+```
+
