@@ -1,5 +1,5 @@
-from app_model import Model
-from app_types import Msg
+from model import Model
+from types import Msg
 
 
 async def update(model: Model, msg: Msg) -> (Model, Msg):

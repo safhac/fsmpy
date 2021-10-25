@@ -1,9 +1,9 @@
 import asyncio
 from datetime import datetime
-from app_program import Program
-from app_model import Model
-from app_types import Msg
-from app_update import update, subscriptions
+from program import Program
+from model import Model
+from types import Msg
+from update import update, subscriptions
 
 init = lambda: (Model, Msg.Listen)
 
