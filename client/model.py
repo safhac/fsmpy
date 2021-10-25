@@ -1,7 +1,15 @@
-class Model:
-    def __init__(self, filename):
-        self._file: str = filename
+from dataclasses import dataclass
+from enum import Enum, auto
 
-    @property
-    def file(self):
-        return self._file
+
+class Msg(Enum):
+    Listen = auto()
+    Process = auto()
+    Send = auto()
+    Failure = auto()
+
+
+@dataclass(frozen=True)
+class Model:
+    state: str
+    data: str
