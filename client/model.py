@@ -23,5 +23,6 @@ class Model:
     data: str = None
 
 
-def init() -> (Model, Msg):
-    return Model(), Msg.Listen
+def initialise_model() -> (Model, Msg):
+    initial_data_status = DataStatus()
+    return Model(initial_data_status, None), Msg.Listen

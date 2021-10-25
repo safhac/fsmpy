@@ -1,6 +1,6 @@
-from .update import Update
-from .model import Model
-from .model import Msg
+from update import Update
+from model import Model
+from model import Msg
 
 
 class Program:
@@ -16,6 +16,7 @@ class Program:
         self.update = update(model, msg)
         self.subscriptions = subscriptions
 
-    async def run(self):
-        while True:
-            self.update.update()
+    def start(self):
+        update = self.update.update()
+        with update:
+            update.send(Msg.Listen)
