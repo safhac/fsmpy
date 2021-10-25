@@ -37,7 +37,7 @@ class Update:
 
 async def listen(model):
     print('listen function')
-    Update(model, Msg.Process)
+    # Update.update(model, Msg.Process)
 
 
 async def process(): ...
