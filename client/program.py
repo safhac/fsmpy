@@ -20,4 +20,4 @@ class Program:
     async def start(self):
         update = self.update.update()
         async with update:
-            update.send(Msg.Listen)
+            update(Msg.Listen)
