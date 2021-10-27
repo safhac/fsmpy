@@ -11,10 +11,8 @@ class Update:
         self._model = model
         self._msg = msg
 
-    @asynccontextmanager
-    async def update(self, *args, **kwargs):
-        self._msg = yield
-        match self._msg:
+    async def update(self, msg: Msg):
+        match msg:
             case Msg.Listen:
                 print('listen')
                 await listen(self._model)
