@@ -32,10 +32,10 @@ class Update:
                 print('_')
                 await listen(self._model)
 
-
-async def listen(model):
-    print('listen function')
-    # Update.update(model, Msg.Process)
+    @asynccontextmanager
+    async def listen():
+        print('listen function')
+        # Update.update(model, Msg.Process)
 
 
 async def process(): ...
