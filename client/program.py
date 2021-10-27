@@ -1,7 +1,7 @@
 from update import Update
 from model import Model
 from model import Msg
-
+import asyncio
 
 class Program:
     """
@@ -17,7 +17,5 @@ class Program:
         self.update = update(model, msg)
         self.subscriptions = subscriptions
 
-    async def start(self):
-        update = self.update.update()
-        async with update:
-            update(Msg.Listen)
+    async def run(self):
+        await self.update.start()

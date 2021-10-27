@@ -1,16 +1,40 @@
 from client.model import Msg
-from contextlib import asynccontextmanager, AsyncContextDecorator
-from asyncio import run
+from contextlib import asynccontextmanager, AsyncContextDecorator, ContextDecorator
+import asyncio
 
 
-class AsyncContextManager(AsyncContextDecorator):
-    async def __aenter__(self):
+class mycontext(ContextDecorator):
+    def __init__(self, *args, **kwargs):
+        ...
+    def __enter__(self):
         print('starting')
+        print(type(self))
         return self
 
-    async def __aexit__(self, *exc):
+    def __exit__(self, *exc):
         print('Finishing')
         return False
+
+
+@mycontext
+def listen(*args):
+    print('listen function')
+    # Update.update(model, Msg.Process)
+
+
+@mycontext
+async def process():
+    ...
+
+
+@mycontext
+async def send():
+    ...
+
+
+@mycontext
+async def failure():
+    ...
 
 
 class Update:
@@ -24,13 +48,16 @@ class Update:
         self._model = model
         self._msg = msg
 
+    async def start(self):
+        await self.update(Msg.Listen)
+
     async def update(self, msg: Msg):
         match msg:
             case Msg.Listen:
                 print('listen')
-                async with self.listen() as listen:
+                with listen():
                     print(f'with {listen}')
-                self.update(Msg.Process)
+                await self.update(Msg.Process)
             case Msg.Process:
                 print('process')
             case Msg.Send:
@@ -41,23 +68,6 @@ class Update:
                 print('noop')
             case _:
                 print('_')
-
-    @AsyncContextManager
-    async def listen(self):
-        print('listen function')
-        # Update.update(model, Msg.Process)
-
-    @AsyncContextManager
-    async def process(self):
-        ...
-
-    @AsyncContextManager
-    async def send(self):
-        ...
-
-    @AsyncContextManager
-    def failure(self):
-        ...
 
 
 async def subscriptions(): ...
