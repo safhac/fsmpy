@@ -3,6 +3,7 @@ from model import Model
 from model import Msg
 import asyncio
 
+
 class Program:
     """
     The class represents the program primary parts
@@ -17,5 +18,5 @@ class Program:
         self.update = update(model, msg)
         self.subscriptions = subscriptions
 
-    async def run(self):
-        await self.update.start()
+    def run(self):
+        asyncio.run(self.update.update())
