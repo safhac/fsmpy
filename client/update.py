@@ -1,38 +1,25 @@
+import time
+
 from client.model import Msg
 from contextlib import asynccontextmanager, AsyncContextDecorator, ContextDecorator
 import asyncio
 
 
-class mycontext(ContextDecorator):
-    def __init__(self, *args, **kwargs):
-        ...
-    def __enter__(self):
-        print('starting')
-        print(type(self))
-        return self
-
-    def __exit__(self, *exc):
-        print('Finishing')
-        return False
-
-
-@mycontext
-def listen(*args):
-    print('listen function')
+@asynccontextmanager
+async def listen(*args):
+    yield
+    print('listen complete')
     # Update.update(model, Msg.Process)
 
 
-@mycontext
 async def process():
     ...
 
 
-@mycontext
 async def send():
     ...
 
 
-@mycontext
 async def failure():
     ...
 
@@ -48,14 +35,14 @@ class Update:
         self._model = model
         self._msg = msg
 
-    async def start(self):
-        await self.update(Msg.Listen)
 
-    async def update(self, msg: Msg):
+    async def update(self, msg=Msg.Listen):
+
         match msg:
             case Msg.Listen:
                 print('listen')
-                with listen():
+                async with listen():
+                    time.sleep(2)
                     print(f'with {listen}')
                 await self.update(Msg.Process)
             case Msg.Process:
@@ -67,7 +54,9 @@ class Update:
             case Msg.NoOp:
                 print('noop')
             case _:
-                print('_')
+                print(f'msg is {msg}')
+
+
 
 
 async def subscriptions(): ...
