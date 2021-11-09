@@ -1,13 +1,19 @@
 import time
-
-from client.model import Msg
-from contextlib import asynccontextmanager, AsyncContextDecorator, ContextDecorator
 import asyncio
+from contextlib import asynccontextmanager, ExitStack, AsyncExitStack
+from client.model import Msg, PORT, HOST
+
+from managers import Listen
 
 
-@asynccontextmanager
-async def listen(*args):
-    yield
+async def listen():
+    reader, writer = await asyncio.open_connection(
+        HOST, PORT)
+    data = await reader.read(100)
+    message = data.decode()
+    addr = writer.get_extra_info('peername')
+
+    print(f"Received {message!r} from {addr!r}")
     print('listen complete')
     # Update.update(model, Msg.Process)
 
@@ -41,7 +47,8 @@ class Update:
         match msg:
             case Msg.Listen:
                 print('listen')
-                async with listen():
+                with Listen():
+                    await listen()
                     time.sleep(2)
                     print(f'with {listen}')
                 await self.update(Msg.Process)
