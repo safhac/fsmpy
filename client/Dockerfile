@@ -3,10 +3,11 @@ FROM python:3.10 AS compile-image
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
+WORKDIR /deploy
+
 COPY setup.py .
-ADD . /deploy
-RUN cd /deploy && \
-    pip install --upgrade pip && \
+
+RUN pip install --upgrade pip && \
     pip install .
 
 FROM python:3.10 AS build-image
