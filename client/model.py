@@ -5,6 +5,7 @@ from datetime import datetime
 PORT = 8888
 HOST = '127.0.0.1'
 
+
 class Msg(Enum):
     Listen = auto()
     Process = auto()
