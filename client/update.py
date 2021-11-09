@@ -1,21 +1,24 @@
 import time
 import asyncio
-from contextlib import asynccontextmanager, ExitStack, AsyncExitStack
 from client.model import Msg, PORT, HOST
 
 from managers import Listen
 
 
 async def listen():
-    reader, writer = await asyncio.open_connection(
-        HOST, PORT)
-    data = await reader.read(100)
-    message = data.decode()
-    addr = writer.get_extra_info('peername')
+    try:
+        reader, writer = await asyncio.open_connection(
+            HOST, PORT)
+    except ConnectionRefusedError as e:
+        print(e.args[0])
+    else:
+        data = await reader.read(100)
+        message = data.decode()
+        addr = writer.get_extra_info('peername')
 
-    print(f"Received {message!r} from {addr!r}")
-    print('listen complete')
-    # Update.update(model, Msg.Process)
+        print(f"Received {message!r} from {addr!r}")
+    finally:
+        print('listen complete')
 
 
 async def process():
