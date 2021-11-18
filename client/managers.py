@@ -47,7 +47,7 @@ action_map = dict(
     ))
 
 
-class Manager(AbstractContextManager):
+class ActionManager(AbstractContextManager):
 
     def __init__(self, context: Msg):
 
