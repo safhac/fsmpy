@@ -4,7 +4,7 @@ from client.model import Model
 from client.model import DataStatus
 from client.model import Msg
 
-from managers import Manager
+from managers import ActionManager
 from managers import listen
 
 
@@ -29,7 +29,7 @@ class Update:
                 self._model = Model(state)
                 print('listen')
 
-                with Manager(Msg.Listen) as manager:
+                with ActionManager(Msg.Listen) as manager:
                     data, error = await listen(manager)
 
                 if data:
