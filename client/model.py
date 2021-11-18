@@ -16,17 +16,17 @@ class Msg(Enum):
 
 
 @dataclass
-class DataStatus:
+class DataState:
     processed: bool = False
     received: datetime = None
 
 
 @dataclass(frozen=True)
 class Model:
-    state: DataStatus
+    state: DataState
     data: str = None
 
 
 def initialise_model() -> (Model, Msg):
-    initial_data_status = DataStatus()
+    initial_data_status = DataState()
     return Model(initial_data_status, None), Msg.Listen
