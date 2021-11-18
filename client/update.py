@@ -1,5 +1,6 @@
 
-from client.model import Model, new_model
+from client.model import Model
+from client.model import new_model
 from client.model import Msg
 
 from managers import ActionManager
@@ -24,17 +25,16 @@ class Update:
             case Msg.Listen:
 
                 self._model = new_model()
-                print('listen')
 
                 with ActionManager(Msg.Listen) as manager:
                     data, error = await listen(manager)
 
                 if data:
-                    self._model = Model(state, data)
+                    self._model = Model(self._model.state, data)
                     await self.update(Msg.Process)
 
                 elif error:
-                    self._model = Model(state, error)
+                    self._model = Model(self._model.state, error)
                     await self.update(Msg.Failure)
 
             case Msg.Process:
