@@ -1,7 +1,5 @@
-from datetime import datetime
 
-from client.model import Model
-from client.model import DataState
+from client.model import Model, new_model
 from client.model import Msg
 
 from managers import ActionManager
@@ -25,8 +23,7 @@ class Update:
 
             case Msg.Listen:
 
-                state = DataState(False, datetime.now())
-                self._model = Model(state)
+                self._model = new_model()
                 print('listen')
 
                 with ActionManager(Msg.Listen) as manager:

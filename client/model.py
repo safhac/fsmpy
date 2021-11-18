@@ -21,6 +21,9 @@ class DataState:
     received: datetime = None
 
 
+new_state = lambda: DataState(False, datetime.now())
+
+
 @dataclass(frozen=True)
 class Model:
     state: DataState
@@ -30,3 +33,6 @@ class Model:
 def initialise_model() -> (Model, Msg):
     initial_data_status = DataState()
     return Model(initial_data_status, None), Msg.Listen
+
+
+new_model = lambda: Model(new_state())
