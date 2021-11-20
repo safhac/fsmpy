@@ -41,6 +41,11 @@ new_model = lambda: Model(new_state())
 
 
 @dataclass
-class TaskResponse:
+class TaskResult:
+    result: T
+    success: bool
+
+@dataclass
+class TaskFailure:
     result: T
     success: bool

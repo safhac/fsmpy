@@ -1,9 +1,10 @@
 import os
 import asyncio
 from contextlib import AbstractContextManager
-from model import Msg
+from model import Msg, TaskFailure
 from model import PORT
 from model import HOST
+from model import TaskResult
 
 
 async def listen(self):
@@ -15,7 +16,7 @@ async def listen(self):
         print('connection error')
         # log error
         print(e.args)
-        return (None, e.args[1])
+        return None, e.args[1]
 
     else:
         data = await reader.read(100)
@@ -63,7 +64,7 @@ class ActionManager(AbstractContextManager):
 
     def __enter__(self):
         print(f'enter listen')
-        return (self, None)
+        return TaskResult(self, None)
         print('listen complete')
 
     def __exit__(self, *exc):
@@ -71,8 +72,8 @@ class ActionManager(AbstractContextManager):
         print(f'exit listen {exc=}')
         if not exc or ConnectionRefusedError in exc:
             print('in')
-            return True
-        return False
+            return TaskFailure('ConnectionRefusedError', True)
+        return TaskFailure('Unknown error', False)
 
     def run(self, *args, **kwargs):
         return self.action()
