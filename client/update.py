@@ -26,7 +26,7 @@ class Update:
 
                 self._model = new_model()
 
-                with ActionManager(Msg.Listen) as manager:
+                async with ActionManager(Msg.Listen) as manager:
                     result = await listen(manager)
 
                 print(f'action completed {result} {type(result)}')
