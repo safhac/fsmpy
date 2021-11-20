@@ -63,13 +63,6 @@ class ActionManager(AbstractAsyncContextManager):
             print('cant find port')
             self.port = PORT
 
-    def __enter__(self):
-        print(f'enter listen')
-        result = self.action(self)
-        print(f'enter {result} {type(result)}')
-        return result
-        print('listen complete')
-
     async def __aenter__(self):
         print(f'aenter listen')
         result = self.action(self)
@@ -80,14 +73,6 @@ class ActionManager(AbstractAsyncContextManager):
     async def __aexit__(self, *exc):
 
         print(f'aexit listen {exc=}')
-        if not exc or ConnectionRefusedError in exc:
-            print('in')
-            return TaskFailure('ConnectionRefusedError', True)
-        return TaskFailure('Unknown error', False)
-
-    def __exit__(self, *exc):
-
-        print(f'exit listen {exc=}')
         if not exc or ConnectionRefusedError in exc:
             print('in')
             return TaskFailure('ConnectionRefusedError', True)
