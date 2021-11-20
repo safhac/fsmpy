@@ -1,6 +1,6 @@
 import os
 import asyncio
-from contextlib import AbstractContextManager
+from contextlib import AbstractContextManager, AbstractAsyncContextManager
 from model import Msg, TaskFailure
 from model import PORT
 from model import HOST
@@ -48,13 +48,14 @@ action_map = dict(
     ))
 
 
-class ActionManager(AbstractContextManager):
+class ActionManager(AbstractAsyncContextManager):
 
     def __init__(self, context: Msg):
 
         self.host = HOST
-
+        self.action = action_map[context.name]
         try:
+            print(os.environ['PORT'])
             self.port = os.environ['PORT']
 
         except KeyError:
@@ -64,8 +65,25 @@ class ActionManager(AbstractContextManager):
 
     def __enter__(self):
         print(f'enter listen')
-        return TaskResult(self, None)
+        result = self.action(self)
+        print(f'enter {result} {type(result)}')
+        return result
         print('listen complete')
+
+    async def __aenter__(self):
+        print(f'aenter listen')
+        result = self.action(self)
+        print(f'enter {result} {type(result)}')
+        return result
+        print('listen complete')
+
+    async def __aexit__(self, *exc):
+
+        print(f'aexit listen {exc=}')
+        if not exc or ConnectionRefusedError in exc:
+            print('in')
+            return TaskFailure('ConnectionRefusedError', True)
+        return TaskFailure('Unknown error', False)
 
     def __exit__(self, *exc):
 
