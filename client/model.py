@@ -3,7 +3,7 @@ from enum import Enum, auto
 from datetime import datetime
 from typing import TypeVar
 
-T = TypeVar["T"]
+T = TypeVar("T")
 
 PORT = 8888
 HOST = '127.0.0.1'
@@ -44,6 +44,7 @@ new_model = lambda: Model(new_state())
 class TaskResult:
     result: T
     success: bool
+
 
 @dataclass
 class TaskFailure:
