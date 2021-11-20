@@ -1,5 +1,5 @@
 
-from client.model import Model
+from client.model import Model, TaskResult, TaskFailure
 from client.model import new_model
 from client.model import Msg
 
@@ -27,15 +27,16 @@ class Update:
                 self._model = new_model()
 
                 with ActionManager(Msg.Listen) as manager:
-                    data, error = await listen(manager)
+                    result = await listen(manager)
 
-                if data:
-                    self._model = Model(self._model.state, data)
+                print(f'action completed {result} {type(result)}')
+                if isinstance(result, TaskResult):
+                    self._model = Model(self._model.state, result.result)
                     await self.update(Msg.Process)
 
-                elif error:
-                    self._model = Model(self._model.state, error)
-                    await self.update(Msg.Failure)
+                elif isinstance(result, TaskFailure):
+                    self._model = Model(self._model.state, result.result)
+                    await self.update(Msg.Failure, result.result)
 
             case Msg.Process:
 
