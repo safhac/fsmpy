@@ -8,7 +8,9 @@ from model import TaskResult
 
 
 async def listen(self):
+    print(f'listen {self.port}')
     try:
+
         reader, writer = await asyncio.open_connection(
             HOST, PORT)
 
@@ -64,22 +66,13 @@ class ActionManager(AbstractAsyncContextManager):
             self.port = PORT
 
     async def __aenter__(self):
-        print(f'aenter listen')
-        result = self.action(self)
-        print(f'enter {result} {type(result)}')
-        return result
+        return self
         print('listen complete')
 
     async def __aexit__(self, *exc):
 
         print(f'aexit listen {exc=}')
         if not exc or ConnectionRefusedError in exc:
-            print('in')
             return TaskFailure('ConnectionRefusedError', True)
         return TaskFailure('Unknown error', False)
 
-    def run(self, *args, **kwargs):
-        return self.action()
-
-    # def action(self):
-    #     return self.action()
