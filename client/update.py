@@ -1,3 +1,4 @@
+import asyncio
 
 from client.model import Model, TaskResult, TaskFailure
 from client.model import new_model
@@ -23,20 +24,12 @@ class Update:
         match msg:
 
             case Msg.Listen:
-
+                # update model
                 self._model = new_model()
-
-                async with ActionManager(Msg.Listen) as manager:
-                    result = await listen(manager)
-
-                print(f'action completed {result} {type(result)}')
-                if isinstance(result, TaskResult):
-                    self._model = Model(self._model.state, result.result)
-                    await self.update(Msg.Process)
-
-                elif isinstance(result, TaskFailure):
-                    self._model = Model(self._model.state, result.result)
-                    await self.update(Msg.Failure, result.result)
+                event = asyncio.Event()
+                listen_task = asyncio.create_task(listen(event))
+                event.set()
+                await listen_task
 
             case Msg.Process:
 

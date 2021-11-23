@@ -7,10 +7,12 @@ from model import HOST
 from model import TaskResult
 
 
-async def listen(self):
+async def listen(event):
+    avail_port = os.environ.get('PORT', PORT)
     try:
+        print('listening')
         reader, writer = await asyncio.open_connection(
-            HOST, PORT)
+            HOST, avail_port)
 
     except ConnectionRefusedError as e:
         print('ConnectionRefusedError', e.args)
