@@ -8,7 +8,8 @@ from model import TaskResult
 
 
 async def listen(event):
-    avail_port = os.environ.get('PORT', PORT)
+    # avail_port = os.environ.get('PORT', PORT)
+    avail_port = PORT
     try:
         print('listening')
         reader, writer = await asyncio.open_connection(
@@ -16,7 +17,7 @@ async def listen(event):
 
     except ConnectionRefusedError as e:
         print('ConnectionRefusedError', e.args)
-        raise
+        result = TaskFailure('ConnectionRefusedError', True)
 
     except BaseException as e:
         print(f'other exception {e.args}')
@@ -28,9 +29,11 @@ async def listen(event):
         addr = writer.get_extra_info('peername')
 
         print(f"Received {message!r} from {addr!r}")
+        result = TaskResult(data, True)
 
     finally:
         print('listen complete')
+        return result
 
 
 async def process():

@@ -19,6 +19,13 @@ class Update:
         self._model = model
         self._msg = msg
 
+    async def make_awaitable(self, action):
+
+        event = asyncio.Event()
+        awaitable = asyncio.create_task(action(event))
+        event.set()
+        return await awaitable
+
     async def update(self, msg=Msg.Listen):
 
         match msg:
@@ -26,10 +33,8 @@ class Update:
             case Msg.Listen:
                 # update model
                 self._model = new_model()
-                event = asyncio.Event()
-                listen_task = asyncio.create_task(listen(event))
-                event.set()
-                await listen_task
+                task = await self.make_awaitable(listen)
+                print(f'msg {task.result}')
 
             case Msg.Process:
 
