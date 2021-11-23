@@ -1,7 +1,7 @@
 import os
 import asyncio
 from contextlib import AbstractContextManager, AbstractAsyncContextManager
-from model import Msg, TaskFailure
+from model import Msg, TaskResult
 from model import PORT
 from model import HOST
 from model import TaskResult
@@ -18,7 +18,7 @@ async def listen(event):
 
     except ConnectionRefusedError as e:
         print('ConnectionRefusedError', e.args)
-        result = TaskFailure('ConnectionRefusedError', True)
+        result = TaskResult('ConnectionRefusedError', True)
 
     except BaseException as e:
         print(f'other exception {e.args}')
@@ -81,5 +81,5 @@ class ActionManager(AbstractAsyncContextManager):
     async def __aexit__(self, *exc):
         print(f'aexit context {exc=}')
         if ConnectionRefusedError in exc:
-            return TaskFailure('ConnectionRefusedError', True)
-        return TaskFailure('Unknown error', False)
+            return TaskResult('ConnectionRefusedError', True)
+        return TaskResult('Unknown error', False)
