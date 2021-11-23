@@ -1,6 +1,7 @@
 import asyncio
 
-from client.model import Model, TaskResult, TaskFailure
+from client.model import Model, TaskResult, TaskResult
+from client.model import Awaitable
 from client.model import new_model
 from client.model import Msg
 
@@ -19,13 +20,6 @@ class Update:
         self._model = model
         self._msg = msg
 
-    async def make_awaitable(self, action):
-
-        event = asyncio.Event()
-        awaitable = asyncio.create_task(action(event))
-        event.set()
-        return await awaitable
-
     async def update(self, msg=Msg.Listen):
 
         match msg:
@@ -34,7 +28,8 @@ class Update:
 
                 # update model
                 self._model = new_model()
-                task = await self.make_awaitable(listen)
+                action = Awaitable(listen)
+                task = await action.wait()
                 self._model.data = task.result
 
                 if task.success:
@@ -45,7 +40,6 @@ class Update:
             case Msg.Process:
 
                 print('process')
-                task = await self.make_awaitable(process)
                 print(self._model)
             case Msg.Send:
                 print('send')
