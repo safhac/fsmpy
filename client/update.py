@@ -34,7 +34,11 @@ class Update:
                 # update model
                 self._model = new_model()
                 task = await self.make_awaitable(listen)
-                print(f'msg {task.result}')
+                self._model.data = task.result
+                if task.success:
+                    await self.update(Msg.Process)
+                else:
+                    await self.update(Msg.Failure)
 
             case Msg.Process:
 
