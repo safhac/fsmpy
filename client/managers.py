@@ -8,6 +8,7 @@ from model import TaskResult
 
 
 async def listen(event):
+    """await incoming data"""
     # avail_port = os.environ.get('PORT', PORT)
     avail_port = PORT
     try:
@@ -37,14 +38,17 @@ async def listen(event):
 
 
 async def process():
+    """process the data"""
     ...
 
 
 async def send():
+    """send the processed data"""
     ...
 
 
 async def failure():
+    """log fail events"""
     ...
 
 
