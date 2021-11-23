@@ -8,17 +8,17 @@ from model import TaskResult
 
 
 async def listen(self):
-    print(f'listen {self.port}')
     try:
-
         reader, writer = await asyncio.open_connection(
             HOST, PORT)
 
     except ConnectionRefusedError as e:
-        print('connection error')
-        # log error
-        print(e.args)
-        return None, e.args[1]
+        print('ConnectionRefusedError', e.args)
+        raise
+
+    except BaseException as e:
+        print(f'other exception {e.args}')
+        raise
 
     else:
         data = await reader.read(100)
@@ -56,8 +56,8 @@ class ActionManager(AbstractAsyncContextManager):
 
         self.host = HOST
         self.action = action_map[context.name]
+
         try:
-            print(os.environ['PORT'])
             self.port = os.environ['PORT']
 
         except KeyError:
@@ -66,13 +66,11 @@ class ActionManager(AbstractAsyncContextManager):
             self.port = PORT
 
     async def __aenter__(self):
-        return self
-        print('listen complete')
+        await self.action(self)
+        print('context complete')
 
     async def __aexit__(self, *exc):
-
-        print(f'aexit listen {exc=}')
-        if not exc or ConnectionRefusedError in exc:
+        print(f'aexit context {exc=}')
+        if ConnectionRefusedError in exc:
             return TaskFailure('ConnectionRefusedError', True)
         return TaskFailure('Unknown error', False)
-
