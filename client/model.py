@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from datetime import datetime
 from typing import TypeVar
+from typing import Protocol
 
 T = TypeVar("T")
 
@@ -23,9 +24,6 @@ class DataState:
     received: datetime = None
 
 
-new_state = lambda: DataState(False, datetime.now())
-
-
 @dataclass(frozen=True)
 class Model:
     state: DataState
@@ -35,9 +33,6 @@ class Model:
 def initialise_model() -> (Model, Msg):
     initial_data_status = DataState()
     return Model(initial_data_status, None), Msg.Listen
-
-
-new_model = lambda: Model(new_state())
 
 
 @dataclass
@@ -50,3 +45,7 @@ class TaskResult:
 class TaskFailure:
     result: T
     success: bool
+
+
+new_model = lambda: Model(new_state())
+new_state = lambda: DataState(False, datetime.now())
