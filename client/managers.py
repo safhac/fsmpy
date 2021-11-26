@@ -1,14 +1,26 @@
 import os
 import asyncio
-from contextlib import AbstractContextManager, AbstractAsyncContextManager
+from contextlib import AbstractAsyncContextManager
 from model import Msg, TaskResult
 from model import PORT
 from model import HOST
 from model import TaskResult
 
 
-async def listen(event):
+def named(name: str):
+    """function __name__ property decorator"""
+    def inner(func: object):
+        func.__name__ = name
+        return func
+
+    return inner
+
+
+@named('listen')
+async def listen(event: asyncio.Event) -> TaskResult:
     """await incoming data"""
+    print(f'listen function {event}')
+    event.set()
     # avail_port = os.environ.get('PORT', PORT)
     avail_port = PORT
     try:
@@ -18,7 +30,7 @@ async def listen(event):
 
     except ConnectionRefusedError as e:
         print('ConnectionRefusedError', e.args)
-        result = TaskResult('ConnectionRefusedError', True)
+        result = TaskResult(e.args, False)
 
     except BaseException as e:
         print(f'other exception {e.args}')
@@ -30,23 +42,26 @@ async def listen(event):
         addr = writer.get_extra_info('peername')
 
         print(f"Received {message!r} from {addr!r}")
-        result = TaskResult(data, True)
+        return TaskResult(data, True)
 
     finally:
         print('listen complete')
-        return result
+        return await event
 
 
-async def process():
-    """process the data"""
-    ...
-
-
+@named('send')
 async def send():
     """send the processed data"""
     ...
 
 
+@named('process')
+async def process():
+    """process the data"""
+    ...
+
+
+@named('failure')
 async def failure():
     """log fail events"""
     ...
@@ -59,24 +74,17 @@ action_map = dict(
     ))
 
 
-class ActionManager(AbstractAsyncContextManager):
-
-    def __init__(self, context: Msg):
-
-        self.host = HOST
-        self.action = action_map[context.name]
-
-        try:
-            self.port = os.environ['PORT']
-
-        except KeyError:
-            # log error
-            print('cant find port')
-            self.port = PORT
+class Awaitable(AbstractAsyncContextManager):
+    def __init__(self, action, event=asyncio.Event()):
+        self.event = event
+        print(f'awaitable {action} {self.event}')
+        self.awaitable = asyncio.create_task(
+            action(self.event),
+            name=action
+        )
 
     async def __aenter__(self):
-        await self.action(self)
-        print('context complete')
+        return await self.awaitable
 
     async def __aexit__(self, *exc):
         print(f'aexit context {exc=}')
