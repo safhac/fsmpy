@@ -36,14 +36,7 @@ class TaskResult:
     success: bool
 
 
-class Awaitable:
-    def __init__(self, action, event=asyncio.Event()):
-        self.awaitable = asyncio.create_task(
-            action(event.set())
-        )
 
-    async def wait(self):
-        return await self.awaitable
 
 
 def initialise_model() -> (Model, Msg):
