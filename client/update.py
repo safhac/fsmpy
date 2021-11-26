@@ -1,12 +1,9 @@
-import asyncio
-
-from client.model import Model, TaskResult, TaskResult
-from client.model import Awaitable
 from client.model import new_model
 from client.model import Msg
 
-from managers import listen
-from managers import process
+from client.managers import Awaitable
+from client.managers import listen
+from client.managers import process
 
 
 class Update:
@@ -28,14 +25,13 @@ class Update:
 
                 # update model
                 self._model = new_model()
-                action = Awaitable(listen)
-                task = await action.wait()
-                self._model.data = task.result
 
-                if task.success:
-                    await self.update(Msg.Process)
-                else:
-                    await self.update(Msg.Failure)
+                async with Awaitable(listen) as action:
+                    print(f'with {action}')
+                    task = await action
+                    self._model.data = task.result
+
+                    await self.update(Msg.Process) if task.success else self.update(Msg.Failure)
 
             case Msg.Process:
 
