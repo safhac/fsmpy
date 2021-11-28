@@ -1,9 +1,6 @@
 import asyncio
 import os
 
-from client.model import HOST
-from client.model import PORT
-
 
 async def handle_echo(reader, writer):
     data = await reader.read(100)
@@ -26,7 +23,7 @@ async def main(host: str, port: int, callback: object) -> None:
 
     reader, writer = await asyncio.open_connection(
         HOST, PORT)
-    callback(reader, writer)
+    # await callback(reader, writer)
 
     addrs = ', '.join(str(sock.getsockname()) for sock in server.sockets)
 
@@ -37,6 +34,9 @@ async def main(host: str, port: int, callback: object) -> None:
 
 
 if __name__ == '__main__':
+    import client
+    from client.model import HOST, PORT
+
     asyncio.run(main(
         host=HOST,
         port=os.environ.get('PORT', PORT),
