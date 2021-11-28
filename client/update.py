@@ -1,5 +1,6 @@
 from client.model import new_model
 from client.model import Msg
+from client.model import TaskResult
 
 from client.managers import Awaitable
 from client.managers import listen
@@ -32,7 +33,7 @@ class Update:
                     self._model.data = task.result
 
                     await self.update(Msg.Process) if task.success else self.update(Msg.Failure)
-
+                print('out of with')
             case Msg.Process:
 
                 print('process')
