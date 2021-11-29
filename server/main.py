@@ -17,13 +17,9 @@ async def handle_echo(reader, writer):
     writer.close()
 
 
-async def main(host: str, port: int, callback: object) -> None:
+async def _main(host: str, port: int, callback: object) -> None:
     server = await asyncio.start_server(
         callback, host, port)
-
-    reader, writer = await asyncio.open_connection(
-        HOST, PORT)
-    # await callback(reader, writer)
 
     addrs = ', '.join(str(sock.getsockname()) for sock in server.sockets)
 
@@ -33,12 +29,17 @@ async def main(host: str, port: int, callback: object) -> None:
         await server.serve_forever()
 
 
-if __name__ == '__main__':
-    import client
+def main():
     from client.model import HOST, PORT
 
-    asyncio.run(main(
+    asyncio.run(_main(
         host=HOST,
         port=os.environ.get('PORT', PORT),
         callback=handle_echo
-    ))
+    ),
+        debug=True)
+
+
+if __name__ == '__main__':
+    # or python -m server.main
+    main()
